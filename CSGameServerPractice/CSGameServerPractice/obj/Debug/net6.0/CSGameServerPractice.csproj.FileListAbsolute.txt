@@ -1,0 +1,15 @@
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\bin\Debug\net6.0\CSGameServerPractice.exe
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\bin\Debug\net6.0\CSGameServerPractice.deps.json
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\bin\Debug\net6.0\CSGameServerPractice.runtimeconfig.json
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\bin\Debug\net6.0\CSGameServerPractice.dll
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\bin\Debug\net6.0\CSGameServerPractice.pdb
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.csproj.AssemblyReference.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.GeneratedMSBuildEditorConfig.editorconfig
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.AssemblyInfoInputs.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.AssemblyInfo.cs
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.csproj.CoreCompileInputs.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.dll
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\refint\CSGameServerPractice.dll
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.pdb
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\CSGameServerPractice.genruntimeconfig.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\CSGameServerPractice\obj\Debug\net6.0\ref\CSGameServerPractice.dll

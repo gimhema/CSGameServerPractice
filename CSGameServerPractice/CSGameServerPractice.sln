@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSGameServerPractice", "CSGameServerPractice\CSGameServerPractice.csproj", "{0620D740-2478-43A2-A70D-85687B3AEB11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClientConsole", "TestClientConsole\TestClientConsole.csproj", "{B870E64E-D175-46F9-8D9D-CBD4E7847B19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0620D740-2478-43A2-A70D-85687B3AEB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0620D740-2478-43A2-A70D-85687B3AEB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0620D740-2478-43A2-A70D-85687B3AEB11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B870E64E-D175-46F9-8D9D-CBD4E7847B19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B870E64E-D175-46F9-8D9D-CBD4E7847B19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B870E64E-D175-46F9-8D9D-CBD4E7847B19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B870E64E-D175-46F9-8D9D-CBD4E7847B19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

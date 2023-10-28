@@ -1,0 +1,15 @@
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\bin\Debug\net6.0\TestClientConsole.exe
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\bin\Debug\net6.0\TestClientConsole.deps.json
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\bin\Debug\net6.0\TestClientConsole.runtimeconfig.json
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\bin\Debug\net6.0\TestClientConsole.dll
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\bin\Debug\net6.0\TestClientConsole.pdb
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.csproj.AssemblyReference.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.AssemblyInfoInputs.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.AssemblyInfo.cs
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.csproj.CoreCompileInputs.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.dll
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\refint\TestClientConsole.dll
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.pdb
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\TestClientConsole.genruntimeconfig.cache
+C:\ws_git\CSServerPractice\CSGameServerPractice\CSGameServerPractice\TestClientConsole\obj\Debug\net6.0\ref\TestClientConsole.dll
