@@ -11,7 +11,7 @@ namespace CSGameServerPractice.Server
     {
         static Dictionary<Socket, byte[]> clients = new Dictionary<Socket, byte[]>();
 
-        static void Main(string[] args)
+        public static void Run()
         {
             // 서버 소켓 생성 및 바인딩
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 12345);

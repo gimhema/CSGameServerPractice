@@ -8,7 +8,7 @@ namespace TestClientConsole.Client
 {
     internal class Client
     {
-        static void Main(string[] args)
+        public static void Run()
         {
             Console.Write("Write Your Name: ");
             string nickname = Console.ReadLine();
