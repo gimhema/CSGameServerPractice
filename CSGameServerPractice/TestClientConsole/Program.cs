@@ -1,4 +1,4 @@
-﻿using TestClientConsole.Client;
+﻿using CSTestClient;
 
 
 internal class Program
@@ -7,6 +7,7 @@ internal class Program
     {
         Console.WriteLine("Start Client");
 
-        Client.Run();
+        Client client = new Client();
+        client.StartClient();
     }
 }

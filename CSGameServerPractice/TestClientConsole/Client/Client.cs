@@ -2,51 +2,48 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 
-namespace TestClientConsole.Client
+namespace CSTestClient
 {
-    internal class Client
+    class Client
     {
-        public static void Run()
+
+        public void StartClient()
         {
-            Console.Write("Write Your Name: ");
-            string nickname = Console.ReadLine();
+            Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            client.Connect(new IPEndPoint(IPAddress.Loopback, 12345));
 
-            TcpClient client = new TcpClient();
-            client.Connect(IPAddress.Loopback, 12345);
-
-            Console.WriteLine("Connect Server.");
-
-            // 서버로부터 메시지를 수신하는 스레드 시작
-            Thread receiveThread = new Thread(() => ReceiveMessages(client));
-            receiveThread.Start();
+            Console.WriteLine("Connected to server. Type 'exit' to quit.");
 
             while (true)
             {
                 string message = Console.ReadLine();
-                SendMessage(client, nickname + ": " + message);
+                if (message.ToLower() == "exit")
+                {
+                    client.Close();
+                    break;
+                }
+
+                byte[] data = Encoding.UTF8.GetBytes(message);
+                SocketAsyncEventArgs sendEventArg = new SocketAsyncEventArgs();
+                sendEventArg.SetBuffer(data, 0, data.Length);
+                sendEventArg.Completed += SendCompleted;
+
+                if (!client.SendAsync(sendEventArg))
+                {
+                    ProcessSend(sendEventArg);
+                }
             }
         }
 
-        static void ReceiveMessages(TcpClient client)
+        private static void SendCompleted(object sender, SocketAsyncEventArgs e)
         {
-            NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
-
-            while (true)
-            {
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                Console.WriteLine(message);
-            }
+            ProcessSend(e);
         }
 
-        static void SendMessage(TcpClient client, string message)
+        private static void ProcessSend(SocketAsyncEventArgs e)
         {
-            NetworkStream stream = client.GetStream();
-            byte[] messageBuffer = Encoding.UTF8.GetBytes(message);
-            stream.Write(messageBuffer, 0, messageBuffer.Length);
+            // Handle send completion
         }
     }
 }

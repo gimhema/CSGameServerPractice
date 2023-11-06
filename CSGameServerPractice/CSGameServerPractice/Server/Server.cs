@@ -2,83 +2,138 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Collections.Generic;
 using System.Threading;
 
-namespace CSGameServerPractice.Server
+namespace CSGameServerPractice
 {
-    internal class Server
+    class Server
     {
-        static Dictionary<Socket, byte[]> clients = new Dictionary<Socket, byte[]>();
+        private static Socket serverSocket;
+        private static List<Socket> clients = new List<Socket>();
 
-        public static void Run()
+       
+
+        public void StartServer()
         {
-            // 서버 소켓 생성 및 바인딩
-            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 12345);
-            Socket serverSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            serverSocket.Bind(endPoint);
+            serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverSocket.Bind(new IPEndPoint(IPAddress.Any, 12345));
             serverSocket.Listen(10);
 
-            Console.WriteLine("Start Server . . . Wait for Client . . .");
-
-            // 클라이언트 접속 대기 스레드 시작
-            Thread listenThread = new Thread(ListenForClients);
-            listenThread.Start(serverSocket);
-
-            Console.ReadLine();
+            Thread acceptThread = new Thread(AcceptClients);
+            acceptThread.Start();
         }
 
-        static void ListenForClients(object serverSocket)
+        private static void AcceptClients()
         {
-            Socket listener = (Socket)serverSocket;
-
             while (true)
             {
-                // 클라이언트 연결 대기
-                Socket clientSocket = listener.Accept();
-                Console.WriteLine("Connect Client . . . " + clientSocket.RemoteEndPoint);
+                SocketAsyncEventArgs acceptEventArg = new SocketAsyncEventArgs();
+                acceptEventArg.Completed += AcceptCompleted;
 
-                // 클라이언트 관리
-                clients.Add(clientSocket, new byte[1024]);
-                Thread clientThread = new Thread(HandleClient);
-                clientThread.Start(clientSocket);
+                if (!serverSocket.AcceptAsync(acceptEventArg))
+                {
+                    ProcessAccept(acceptEventArg);
+                }
             }
         }
 
-        static void HandleClient(object clientSocket)
+        private static void AcceptCompleted(object sender, SocketAsyncEventArgs e)
         {
-            Socket client = (Socket)clientSocket;
-            byte[] buffer = clients[client];
+            ProcessAccept(e);
+        }
+
+        private static void ProcessAccept(SocketAsyncEventArgs e)
+        {
+            Socket client = e.AcceptSocket;
+            clients.Add(client);
+            Console.WriteLine("Client connected: " + client.RemoteEndPoint);
+
+            e.AcceptSocket = null; // Reset for next accept
+            AcceptClients();
+
+            Thread receiveThread = new Thread(ReceiveFromClient);
+            receiveThread.Start(client);
+        }
+
+        private static void ReceiveFromClient(object clientObj)
+        {
+            Socket client = (Socket)clientObj;
+            byte[] buffer = new byte[1024];
+
             while (true)
             {
                 try
                 {
-                    // 클라이언트로부터 메시지 수신
-                    int bytesRead = client.Receive(buffer);
-                    if (bytesRead > 0)
-                    {
-                        string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        Console.WriteLine("Client (" + client.RemoteEndPoint + "): " + message);
+                    SocketAsyncEventArgs receiveEventArg = new SocketAsyncEventArgs();
+                    receiveEventArg.SetBuffer(buffer, 0, buffer.Length);
+                    receiveEventArg.UserToken = client;
+                    receiveEventArg.Completed += ReceiveCompleted;
 
-                        // 모든 클라이언트에게 메시지 전송
-                        byte[] messageBuffer = Encoding.UTF8.GetBytes(message);
-                        foreach (var otherClient in clients.Keys)
-                        {
-                            if (otherClient != client)
-                            {
-                                otherClient.Send(messageBuffer);
-                            }
-                        }
+                    if (!client.ReceiveAsync(receiveEventArg))
+                    {
+                        ProcessReceive(receiveEventArg);
                     }
                 }
-                catch
+                catch (SocketException)
                 {
-                    // 클라이언트 연결 끊김
-                    Console.WriteLine("Disconnect from (" + client.RemoteEndPoint + ").");
+                    Console.WriteLine("Client disconnected: " + client.RemoteEndPoint);
                     clients.Remove(client);
+                    client.Close();
                     break;
                 }
             }
+        }
+
+        private static void ReceiveCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            ProcessReceive(e);
+        }
+
+        private static void ProcessReceive(SocketAsyncEventArgs e)
+        {
+            Socket client = (Socket)e.UserToken;
+
+            if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+            {
+                byte[] receivedData = new byte[e.BytesTransferred];
+                Array.Copy(e.Buffer, e.Offset, receivedData, 0, e.BytesTransferred);
+                string message = Encoding.UTF8.GetString(receivedData);
+
+                Console.WriteLine("Received from " + client.RemoteEndPoint + ": " + message);
+
+                foreach (var otherClient in clients)
+                {
+                    if (otherClient != client)
+                    {
+                        byte[] response = Encoding.UTF8.GetBytes(message);
+                        SocketAsyncEventArgs sendEventArg = new SocketAsyncEventArgs();
+                        sendEventArg.SetBuffer(response, 0, response.Length);
+                        sendEventArg.UserToken = otherClient;
+                        sendEventArg.Completed += SendCompleted;
+
+                        if (!otherClient.SendAsync(sendEventArg))
+                        {
+                            ProcessSend(sendEventArg);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Client disconnected: " + client.RemoteEndPoint);
+                clients.Remove(client);
+                client.Close();
+            }
+        }
+
+        private static void SendCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            ProcessSend(e);
+        }
+
+        private static void ProcessSend(SocketAsyncEventArgs e)
+        {
+            // Handle send completion
         }
     }
 }

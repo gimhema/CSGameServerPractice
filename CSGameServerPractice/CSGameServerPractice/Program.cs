@@ -1,4 +1,4 @@
-﻿using CSGameServerPractice.Server;
+﻿using CSGameServerPractice;
 
 
 internal class Program
@@ -6,7 +6,7 @@ internal class Program
     private static void Main(string[] args)
     {
         Console.WriteLine("Start Server");
-
-        Server.Run();
+        Server server= new Server();
+        server.StartServer();
     }
 }
