@@ -7,6 +7,6 @@ internal class Program
     {
         Console.WriteLine("Start Server");
         Server server= new Server();
-        server.StartServer();
+        server.Run();
     }
 }

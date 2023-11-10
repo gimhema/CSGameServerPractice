@@ -8,6 +8,6 @@ internal class Program
         Console.WriteLine("Start Client");
 
         Client client = new Client();
-        client.StartClient();
+        client.Run();
     }
 }

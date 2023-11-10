@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -9,131 +10,132 @@ namespace CSGameServerPractice
     class Server
     {
         private static Socket serverSocket;
-        private static List<Socket> clients = new List<Socket>();
-
-       
-
-        public void StartServer()
+        private static List<Socket> clientList = new List<Socket>();
+        private static Queue<byte[]> sendQueue = new Queue<byte[]>();
+        public void Run()
         {
-            serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            serverSocket.Bind(new IPEndPoint(IPAddress.Any, 12345));
-            serverSocket.Listen(10);
+            string host = Dns.GetHostName();
+            IPHostEntry ipHost = Dns.GetHostEntry(host);
+            IPAddress ipAddress = ipHost.AddressList[0];
+            IPEndPoint endPoint = new IPEndPoint(ipAddress, 80);
 
-            Thread acceptThread = new Thread(AcceptClients);
-            acceptThread.Start();
-        }
+            serverSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-        private static void AcceptClients()
-        {
-            while (true)
-            {
-                SocketAsyncEventArgs acceptEventArg = new SocketAsyncEventArgs();
-                acceptEventArg.Completed += AcceptCompleted;
-
-                if (!serverSocket.AcceptAsync(acceptEventArg))
-                {
-                    ProcessAccept(acceptEventArg);
-                }
-            }
-        }
-
-        private static void AcceptCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            ProcessAccept(e);
-        }
-
-        private static void ProcessAccept(SocketAsyncEventArgs e)
-        {
-            Socket client = e.AcceptSocket;
-            clients.Add(client);
-            Console.WriteLine("Client connected: " + client.RemoteEndPoint);
-
-            e.AcceptSocket = null; // Reset for next accept
-            AcceptClients();
-
-            Thread receiveThread = new Thread(ReceiveFromClient);
-            receiveThread.Start(client);
-        }
-
-        private static void ReceiveFromClient(object clientObj)
-        {
-            Socket client = (Socket)clientObj;
-            byte[] buffer = new byte[1024];
+            serverSocket.Bind(endPoint);
+            serverSocket.Listen(1);
 
             while (true)
             {
-                try
-                {
-                    SocketAsyncEventArgs receiveEventArg = new SocketAsyncEventArgs();
-                    receiveEventArg.SetBuffer(buffer, 0, buffer.Length);
-                    receiveEventArg.UserToken = client;
-                    receiveEventArg.Completed += ReceiveCompleted;
+                SocketAsyncEventArgs eventArgs = new SocketAsyncEventArgs();
+                eventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
 
-                    if (!client.ReceiveAsync(receiveEventArg))
-                    {
-                        ProcessReceive(receiveEventArg);
-                    }
-                }
-                catch (SocketException)
+                if ( !serverSocket.AcceptAsync(eventArgs) )
                 {
-                    Console.WriteLine("Client disconnected: " + client.RemoteEndPoint);
-                    clients.Remove(client);
-                    client.Close();
-                    break;
+                    RegisterAccept(eventArgs);
                 }
+            }
+
+        }
+
+        private void RegisterAccept(SocketAsyncEventArgs eventArgs)
+        {
+            eventArgs.AcceptSocket = null;
+
+            bool pending = serverSocket.AcceptAsync(eventArgs);
+            if (pending == false) {
+                OnAcceptCompleted(null, eventArgs);
             }
         }
 
-        private static void ReceiveCompleted(object sender, SocketAsyncEventArgs e)
+        private void OnAcceptCompleted(object sender, SocketAsyncEventArgs args)
         {
-            ProcessReceive(e);
-        }
-
-        private static void ProcessReceive(SocketAsyncEventArgs e)
-        {
-            Socket client = (Socket)e.UserToken;
-
-            if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+            if( args.SocketError == SocketError.Success )
             {
-                byte[] receivedData = new byte[e.BytesTransferred];
-                Array.Copy(e.Buffer, e.Offset, receivedData, 0, e.BytesTransferred);
-                string message = Encoding.UTF8.GetString(receivedData);
+                Console.WriteLine("New Cliet Accpeted : ");
+                clientList.Add(args.AcceptSocket);
 
-                Console.WriteLine("Received from " + client.RemoteEndPoint + ": " + message);
+                SocketAsyncEventArgs recvArgs = new SocketAsyncEventArgs();
+                recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
+                recvArgs.SetBuffer(new byte[1024], 0, 1024);
+                recvArgs.UserToken = args.AcceptSocket;
 
-                foreach (var otherClient in clients)
-                {
-                    if (otherClient != client)
-                    {
-                        byte[] response = Encoding.UTF8.GetBytes(message);
-                        SocketAsyncEventArgs sendEventArg = new SocketAsyncEventArgs();
-                        sendEventArg.SetBuffer(response, 0, response.Length);
-                        sendEventArg.UserToken = otherClient;
-                        sendEventArg.Completed += SendCompleted;
-
-                        if (!otherClient.SendAsync(sendEventArg))
-                        {
-                            ProcessSend(sendEventArg);
-                        }
-                    }
-                }
+                RegisterRecv(recvArgs);
+                RegisterAccept(args);
             }
             else
             {
-                Console.WriteLine("Client disconnected: " + client.RemoteEndPoint);
-                clients.Remove(client);
-                client.Close();
+                Console.WriteLine(args.SocketError.ToString());
             }
         }
 
-        private static void SendCompleted(object sender, SocketAsyncEventArgs e)
+        private void RegisterRecv(SocketAsyncEventArgs eventArgs)
         {
-            ProcessSend(e);
+            Socket client = eventArgs.UserToken as Socket;
+            bool pending = client.ReceiveAsync(eventArgs);
+            if (pending == false)
+            {
+                OnRecvCompleted(null, eventArgs);
+            }
         }
 
-        private static void ProcessSend(SocketAsyncEventArgs e)
+        private void OnRecvCompleted(object sender, SocketAsyncEventArgs eventArgs)
         {
-            // Handle send completion
+            if (eventArgs.BytesTransferred > 0 && eventArgs.SocketError == SocketError.Success )
+            {
+                string recvData = System.Text.Encoding.UTF8.GetString(eventArgs.Buffer,
+                    eventArgs.Offset, eventArgs.BytesTransferred);
+
+                byte[] sendArray = System.Text.Encoding.UTF8.GetBytes(recvData);
+
+                sendQueue.Enqueue(sendArray);
+
+                RegisterSend();
+            }
+            RegisterRecv(eventArgs);
         }
+
+        private void RegisterSend()
+        {
+            byte[] buff = sendQueue.Dequeue();
+
+            for (int i = 0; i < clientList.Count; i++)
+            {
+                SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
+                sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
+                sendArgs.SetBuffer(buff, 0, buff.Length);
+
+                bool pending = clientList[i].SendAsync(sendArgs);
+
+                if(pending == false)
+                {
+                    OnSendCompleted(null, sendArgs);
+                }
+            }
+        }
+
+        private void OnSendCompleted( object send, SocketAsyncEventArgs eventargs )
+        {
+            if(eventargs.BytesTransferred > 0 && eventargs.SocketError == SocketError.Success )
+            {
+                if(sendQueue.Count > 0)
+                {
+
+                }
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            for (int i = 0; i < clientList.Count; i++)
+            {
+                clientList[i].Shutdown(SocketShutdown.Both);
+                clientList[i].Close();
+            }
+            if (serverSocket != null)
+            {
+                serverSocket.Close();
+            }
+        }
+
     }
 }
