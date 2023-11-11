@@ -51,8 +51,20 @@ namespace CSGameServerPractice
         {
             if( args.SocketError == SocketError.Success )
             {
-                Console.WriteLine("New Cliet Accpeted : ");
                 clientList.Add(args.AcceptSocket);
+                
+                if (args.AcceptSocket != null )
+                {
+                    Console.WriteLine("New Cliet Accpeted ");
+                    if ( args.AcceptSocket.RemoteEndPoint != null ) 
+                    {
+                        Console.WriteLine("RemoteEndPoint : " + args.AcceptSocket.RemoteEndPoint.ToString());
+                    }
+                    if (args.AcceptSocket.LocalEndPoint != null )
+                    {
+                        Console.WriteLine("LocalEndPoint : " + args.AcceptSocket.LocalEndPoint.ToString());
+                    }
+                }
 
                 SocketAsyncEventArgs recvArgs = new SocketAsyncEventArgs();
                 recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
@@ -61,6 +73,7 @@ namespace CSGameServerPractice
 
                 RegisterRecv(recvArgs);
                 RegisterAccept(args);
+
             }
             else
             {
@@ -86,6 +99,8 @@ namespace CSGameServerPractice
                     eventArgs.Offset, eventArgs.BytesTransferred);
 
                 byte[] sendArray = System.Text.Encoding.UTF8.GetBytes(recvData);
+
+                Console.WriteLine("RECEV : " + recvData);
 
                 sendQueue.Enqueue(sendArray);
 
