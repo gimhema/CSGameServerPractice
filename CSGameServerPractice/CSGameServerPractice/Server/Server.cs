@@ -137,7 +137,9 @@ namespace CSGameServerPractice
             {
                 if(sendQueue.Count > 0)
                 {
-
+                    byte[] buff = eventargs.Buffer;
+                    string echoMsg = buff.ToString();
+                    Console.WriteLine("Echo Msg : " + echoMsg);
                 }
             }
         }

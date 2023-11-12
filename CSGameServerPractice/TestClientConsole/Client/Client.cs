@@ -77,8 +77,8 @@ namespace CSTestClient
                 string recvData = System.Text.Encoding.UTF8.GetString(args.Buffer,
                 args.Offset, args.BytesTransferred);
 
-                Console.WriteLine("RECV : ", recvData.ToString());
-                Console.WriteLine("BUFFER : ", args.Buffer.ToString());
+                Console.WriteLine("RECV : " + recvData.ToString());
+                Console.WriteLine("BUFFER : " + args.Buffer.ToString());
 
                 bool pending = clientSocket.ReceiveAsync(args);
                 if (pending == false)
