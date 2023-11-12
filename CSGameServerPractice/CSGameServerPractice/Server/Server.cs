@@ -98,10 +98,11 @@ namespace CSGameServerPractice
                 string recvData = System.Text.Encoding.UTF8.GetString(eventArgs.Buffer,
                     eventArgs.Offset, eventArgs.BytesTransferred);
 
-                byte[] sendArray = System.Text.Encoding.UTF8.GetBytes(recvData);
+                
 
                 Console.WriteLine("RECEV : " + recvData);
 
+                byte[] sendArray = Encoding.UTF8.GetBytes(recvData);
                 sendQueue.Enqueue(sendArray);
 
                 RegisterSend();
@@ -116,8 +117,10 @@ namespace CSGameServerPractice
             for (int i = 0; i < clientList.Count; i++)
             {
                 SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
-                sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
                 sendArgs.SetBuffer(buff, 0, buff.Length);
+                sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);                
+
+//                Console.WriteLine("Send Buffer : " + buff.ToString());
 
                 bool pending = clientList[i].SendAsync(sendArgs);
 

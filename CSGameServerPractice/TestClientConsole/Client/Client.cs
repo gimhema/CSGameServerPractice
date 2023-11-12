@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Tracing;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -73,10 +74,11 @@ namespace CSTestClient
         {
             if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
             {
-                string recvData = System.Text.Encoding.UTF8.GetString(args.Buffer, args.Offset, args.BytesTransferred);
+                string recvData = System.Text.Encoding.UTF8.GetString(args.Buffer,
+                args.Offset, args.BytesTransferred);
 
-                Console.WriteLine("RECV : ", recvData);
-
+                Console.WriteLine("RECV : ", recvData.ToString());
+                Console.WriteLine("BUFFER : ", args.Buffer.ToString());
 
                 bool pending = clientSocket.ReceiveAsync(args);
                 if (pending == false)
