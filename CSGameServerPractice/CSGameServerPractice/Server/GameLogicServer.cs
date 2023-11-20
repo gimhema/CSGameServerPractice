@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSGameServerPractice.Server
+namespace CSGameServerPractice
 {
     internal class GameLogicServer
     {

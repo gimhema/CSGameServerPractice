@@ -87,25 +87,26 @@ namespace CSGameServerPractice
             bool pending = client.ReceiveAsync(eventArgs);
             if (pending == false)
             {
-                Console.WriteLine("RegisterRecv");
-               if (eventArgs.BytesTransferred > 0 && eventArgs.SocketError == SocketError.Success)
-               {
-                   string recvData = System.Text.Encoding.UTF8.GetString(eventArgs.Buffer,
-                       eventArgs.Offset, eventArgs.BytesTransferred);
-
-                   Console.WriteLine("RECEV : " + recvData);
-
-                   byte[] sendArray = Encoding.UTF8.GetBytes(recvData);
-                   sendQueue.Enqueue(sendArray);
-
-                   RegisterSend();
-               }
                 OnRecvCompleted(null, eventArgs);
             }
         }
 
         private void OnRecvCompleted(object sender, SocketAsyncEventArgs eventArgs)
         {
+            if (eventArgs.BytesTransferred > 0 && eventArgs.SocketError == SocketError.Success )
+            {
+                string recvData = System.Text.Encoding.UTF8.GetString(eventArgs.Buffer,
+                    eventArgs.Offset, eventArgs.BytesTransferred);
+
+                
+
+                Console.WriteLine("RECEV : " + recvData);
+
+                byte[] sendArray = Encoding.UTF8.GetBytes(recvData);
+                sendQueue.Enqueue(sendArray);
+
+                RegisterSend();
+            }
             RegisterRecv(eventArgs);
         }
 
