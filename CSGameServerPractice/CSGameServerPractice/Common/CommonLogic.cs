@@ -40,6 +40,12 @@ namespace CommonLogic
         public Vector position;
         public Rotation rotation;
 
+        
+        public Location()
+        {
+            Init();
+        }
+
         public Location(Vector position, Rotation rotation)
         {
             this.position = position;
