@@ -20,18 +20,49 @@ namespace CommonLogic
         }
     }
 
-    // 쿼터니언은 다루지않음
-    public class Rotation
+    public class Euler
     {
         public float roll;
         public float pitch;
         public float yaw;
 
-        public Rotation(float roll, float pitch, float yaw)
+        public Euler(float roll, float pitch, float yaw)
         {
             this.roll = roll;
             this.pitch = pitch;
             this.yaw = yaw;
+        }
+    }
+
+    public class Queternion
+    {
+        public float x; 
+        public float y;
+        public float z;
+        public float w;
+
+        public Queternion(float x, float y, float z, float w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+    }
+
+    public class Rotation
+    {
+        public Euler rpy;
+        public Queternion queternion;
+
+        public Rotation()
+        {
+
+        }
+        public Rotation(Euler rpy, Queternion queternion)
+        {
+            this.rpy = rpy;
+            this.queternion = queternion;
         }
     }
 
