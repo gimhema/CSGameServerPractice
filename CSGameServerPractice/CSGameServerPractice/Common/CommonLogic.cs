@@ -12,6 +12,13 @@ namespace CommonLogic
         public float y;
         public float z;
 
+        public Vector()
+        {
+            this.x = 0; 
+            this.y = 0; 
+            this.z = 0;
+        }
+
         public Vector(float x, float y, float z)
         {
             this.x = x;
@@ -25,6 +32,13 @@ namespace CommonLogic
         public float roll;
         public float pitch;
         public float yaw;
+
+        public Euler()
+        {
+            this.roll = 0;
+            this.pitch = 0;
+            this.yaw = 0;
+        }
 
         public Euler(float roll, float pitch, float yaw)
         {
@@ -40,6 +54,14 @@ namespace CommonLogic
         public float y;
         public float z;
         public float w;
+
+        public Queternion()
+        {
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
+            this.w = 0;
+        }
 
         public Queternion(float x, float y, float z, float w)
         {
@@ -85,13 +107,8 @@ namespace CommonLogic
 
         public void Init()
         {
-            this.position.x = 0;
-            this.position.y = 0;
-            this.position.z = 0;
-
-            this.rotation.roll = 0;
-            this.rotation.pitch = 0;
-            this.rotation.yaw = 0;
+            position = new Vector();
+            rotation = new Rotation();
         }
 
         public Vector GetLocation()
