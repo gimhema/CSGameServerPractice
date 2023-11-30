@@ -120,8 +120,6 @@ namespace CSGameServerPractice
                 sendArgs.SetBuffer(buff, 0, buff.Length);
                 sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);                
 
-//                Console.WriteLine("Send Buffer : " + buff.ToString());
-
                 bool pending = clientList[i].SendAsync(sendArgs);
 
                 if(pending == false)
