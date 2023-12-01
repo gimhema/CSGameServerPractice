@@ -5,35 +5,35 @@ using System.Text;
 using System.Threading.Tasks;
 using Message;
 
-namespace CSGameServerPractice
+namespace MessageHandler
 {
     public class GameMessageHandler
     {
 
-        private static Queue<byte[]> sendQueue = new Queue<byte[]>();
-        private static Queue<byte[]> recvQueue = new Queue<byte[]>();
+        public Queue<byte[]> sendQueue = new Queue<byte[]>();
+        public Queue<byte[]> recvQueue = new Queue<byte[]>();
 
         public GameMessageHandler() 
         { 
 
         }
 
-        void WriteMessageToSendQueue(byte[] message)
+        public void PushMessageToSendQueue(byte[] message)
         {
             sendQueue.Enqueue(message);
         }
 
-        byte[] FetchMessageFromSendQueue()
+        public byte[] DequeueMessageFromSendQueue()
         { 
             return sendQueue.Dequeue();
         }
 
-        void RecvMessageFromClient(byte[] message)
+        public void PushMessageToRecvQueue(byte[] message)
         {
             recvQueue.Enqueue(message);
         }
 
-        byte[] FetchMessageFromRecvQueue()
+        public byte[] DeququeMessageFromRecvQueue()
         {
             return recvQueue.Dequeue();
         }

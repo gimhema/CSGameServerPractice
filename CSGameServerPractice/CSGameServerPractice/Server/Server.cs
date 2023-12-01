@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using MessageHandler;
 
 namespace CSGameServerPractice
 {
@@ -11,7 +12,10 @@ namespace CSGameServerPractice
     {
         private static Socket serverSocket;
         private static List<Socket> clientList = new List<Socket>();
+
+        public static GameMessageHandler gameMessageHandler = new GameMessageHandler();
         private static Queue<byte[]> sendQueue = new Queue<byte[]>();
+
         public void Run()
         {
             string host = Dns.GetHostName();
@@ -153,6 +157,26 @@ namespace CSGameServerPractice
             {
                 serverSocket.Close();
             }
+        }
+
+        private void WriteMessageToSendQueue(byte[] message)
+        {
+            gameMessageHandler.PushMessageToSendQueue(message);
+        }
+
+        private byte[] FetchMessageFromSendQueue()
+        {
+            return gameMessageHandler.DequeueMessageFromSendQueue();
+        }
+
+        private void WriteMessageToRecvQueue(byte[] message)
+        {
+            gameMessageHandler.PushMessageToRecvQueue(message);
+        }
+
+        private byte[] FetchMessageFromRecvQueue()
+        {
+            return gameMessageHandler.DequeueMessageFromRecvQueue();
         }
 
     }
