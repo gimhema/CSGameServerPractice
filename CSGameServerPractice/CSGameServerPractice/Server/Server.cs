@@ -108,6 +108,8 @@ namespace CSGameServerPractice
 
                 byte[] sendArray = Encoding.UTF8.GetBytes(recvData);
                 sendQueue.Enqueue(sendArray);
+                // 나중에 recv 처리하면서 pop 해야함
+                WriteMessageToRecvQueue(sendArray);
 
                 RegisterSend();
             }
@@ -116,7 +118,8 @@ namespace CSGameServerPractice
 
         private void RegisterSend()
         {
-            byte[] buff = sendQueue.Dequeue();
+            //  byte[] buff = sendQueue.Dequeue();
+            byte[] buff = FetchMessageFromRecvQueue(); // 일단 지금은 에코라..
 
             for (int i = 0; i < clientList.Count; i++)
             {
@@ -137,12 +140,14 @@ namespace CSGameServerPractice
         {
             if(eventargs.BytesTransferred > 0 && eventargs.SocketError == SocketError.Success )
             {
-                if(sendQueue.Count > 0)
-                {
-                    byte[] buff = eventargs.Buffer;
-                    string echoMsg = buff.ToString();
-                    Console.WriteLine("Echo Msg : " + echoMsg);
-                }
+                byte[] buff = eventargs.Buffer;
+                string echoMsg = buff.ToString();
+                Console.WriteLine("Echo Msg : " + echoMsg);
+
+//                if ( gameMessageHandler.GetSendQueueCapacity() > 0 /*sendQueue.Count > 0*/)
+//                {
+//
+//                }
             }
         }
 

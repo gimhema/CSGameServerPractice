@@ -18,6 +18,10 @@ namespace MessageHandler
 
         }
 
+        public int GetSendQueueCapacity() { return sendQueue.Count; }
+
+        public int GetRecvQueueCapacity() { return recvQueue.Count; }
+
         public void PushMessageToSendQueue(byte[] message)
         {
             sendQueue.Enqueue(message);
