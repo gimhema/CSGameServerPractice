@@ -17,7 +17,7 @@ namespace CSGameServerPractice
         private static Queue<byte[]> sendQueue = new Queue<byte[]>();
 
         public void Run()
-        {
+        { 
             string host = Dns.GetHostName();
             IPHostEntry ipHost = Dns.GetHostEntry(host);
             IPAddress ipAddress = ipHost.AddressList[0];
@@ -75,7 +75,7 @@ namespace CSGameServerPractice
                 recvArgs.SetBuffer(new byte[1024], 0, 1024);
                 recvArgs.UserToken = args.AcceptSocket;
 
-                RegisterRecv(recvArgs);
+                RegisterRecv(recvArgs, SocketError.Success);
                 RegisterAccept(args);
 
             }
@@ -85,40 +85,39 @@ namespace CSGameServerPractice
             }
         }
 
-        private void RegisterRecv(SocketAsyncEventArgs eventArgs)
+        private void RegisterRecv(SocketAsyncEventArgs eventArgs, SocketError netState)
         {
+            if(netState == SocketError.NetworkReset) { return; }
             Socket client = eventArgs.UserToken as Socket;
             bool pending = client.ReceiveAsync(eventArgs);
+
+
             if (pending == false)
             {
+                if (eventArgs.BytesTransferred > 0 && eventArgs.SocketError == SocketError.Success)
+                {
+                    string recvData = System.Text.Encoding.UTF8.GetString(eventArgs.Buffer,
+                        eventArgs.Offset, eventArgs.BytesTransferred);
+
+                    Console.WriteLine("RegisterRecv RECEV : " + recvData);
+
+                    byte[] sendArray = Encoding.UTF8.GetBytes(recvData);
+                    WriteMessageToRecvQueue(sendArray);
+                    RegisterSend();
+
+                }
+
                 OnRecvCompleted(null, eventArgs);
             }
         }
 
         private void OnRecvCompleted(object sender, SocketAsyncEventArgs eventArgs)
         {
-            if (eventArgs.BytesTransferred > 0 && eventArgs.SocketError == SocketError.Success )
-            {
-                string recvData = System.Text.Encoding.UTF8.GetString(eventArgs.Buffer,
-                    eventArgs.Offset, eventArgs.BytesTransferred);
-
-                
-
-                Console.WriteLine("RECEV : " + recvData);
-
-                byte[] sendArray = Encoding.UTF8.GetBytes(recvData);
-                sendQueue.Enqueue(sendArray);
-                // 나중에 recv 처리하면서 pop 해야함
-                WriteMessageToRecvQueue(sendArray);
-
-                RegisterSend();
-            }
-            RegisterRecv(eventArgs);
+            RegisterRecv(eventArgs, SocketError.ConnectionReset);
         }
 
         private void RegisterSend()
         {
-            //  byte[] buff = sendQueue.Dequeue();
             byte[] buff = FetchMessageFromRecvQueue(); // 일단 지금은 에코라..
 
             for (int i = 0; i < clientList.Count; i++)
@@ -143,11 +142,6 @@ namespace CSGameServerPractice
                 byte[] buff = eventargs.Buffer;
                 string echoMsg = buff.ToString();
                 Console.WriteLine("Echo Msg : " + echoMsg);
-
-//                if ( gameMessageHandler.GetSendQueueCapacity() > 0 /*sendQueue.Count > 0*/)
-//                {
-//
-//                }
             }
         }
 
@@ -181,7 +175,7 @@ namespace CSGameServerPractice
 
         private byte[] FetchMessageFromRecvQueue()
         {
-            return gameMessageHandler.DequeueMessageFromRecvQueue();
+            return gameMessageHandler.DeququeMessageFromRecvQueue();
         }
 
     }
