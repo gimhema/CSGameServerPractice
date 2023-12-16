@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace Message
 {
+    public enum MessageType
+    {
+        DEFAULT = 0
+    }
+
+    [Serializable]
     public class GameMessage
     {
         public const int paramSize = 32;
@@ -33,6 +39,7 @@ namespace Message
             {
                 this.param[i] = float.Parse(_temp[i]);
             }
+            
         }
     }
 }
