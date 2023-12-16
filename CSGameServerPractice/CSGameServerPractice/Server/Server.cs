@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using MessageHandler;
+using Message;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace CSGameServerPractice
 {
@@ -178,5 +181,31 @@ namespace CSGameServerPractice
             return gameMessageHandler.DeququeMessageFromRecvQueue();
         }
 
+        public byte[] ConvertMessageToByte(GameMessage gameMessage)
+        {
+            byte[] serialized;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(ms, gameMessage);
+                serialized = ms.ToArray();
+            }
+
+            return serialized;
+        }
+        
+        public GameMessage ConvertByteToMessage(byte[] message)
+        {
+            GameMessage gameMessage = new GameMessage();
+
+            using (MemoryStream ms = new MemoryStream(message))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                gameMessage = (GameMessage)bf.Deserialize(ms);
+            }
+
+            return gameMessage;
+        }
     }
 }
