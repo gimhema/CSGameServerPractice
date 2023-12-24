@@ -8,6 +8,7 @@ using MessageHandler;
 using Message;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using ConnetionHandle;
 
 namespace CSGameServerPractice
 {
@@ -15,6 +16,7 @@ namespace CSGameServerPractice
     {
         private static Socket serverSocket;
         private static List<Socket> clientList = new List<Socket>();
+        private static ConnectionHandler clientHandler = new ConnectionHandler();
 
         public static GameMessageHandler gameMessageHandler = new GameMessageHandler();
         private static Queue<byte[]> sendQueue = new Queue<byte[]>();
@@ -59,6 +61,7 @@ namespace CSGameServerPractice
             if( args.SocketError == SocketError.Success )
             {
                 clientList.Add(args.AcceptSocket);
+                clientHandler.AddNewConnetion(args.AcceptSocket);
                 
                 if (args.AcceptSocket != null )
                 {
@@ -119,19 +122,28 @@ namespace CSGameServerPractice
             RegisterRecv(eventArgs, SocketError.ConnectionReset);
         }
 
+        private bool SendAsyncToClient(int id, SocketAsyncEventArgs args)
+        {
+            return clientHandler.GetConnectionByID(id).SendAsync(args);
+        }
+
         private void RegisterSend()
         {
             byte[] buff = FetchMessageFromRecvQueue(); // 일단 지금은 에코라..
 
-            for (int i = 0; i < clientList.Count; i++)
+            int numConnections = clientHandler.GetConnectionCount();
+
+            for (int i = 0; i < numConnections; i++)
             {
                 SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
                 sendArgs.SetBuffer(buff, 0, buff.Length);
-                sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);                
+                sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
 
-                bool pending = clientList[i].SendAsync(sendArgs);
+                // bool pending = clientList[i].SendAsync(sendArgs);
+                // bool pending = clientHandler.GetConnectionByID(i).SendAsync(sendArgs);
+                bool pending = SendAsyncToClient(i, sendArgs);
 
-                if(pending == false)
+                if (pending == false)
                 {
                     OnSendCompleted(null, sendArgs);
                 }

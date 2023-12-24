@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ConnetionHandler
+namespace ConnetionHandle
 {
     public class ConnectionHandler
     {
@@ -17,6 +17,10 @@ namespace ConnetionHandler
         {
             connections.Add(connetion);
         }
+
+        public int GetConnectionCount() { return connections.Count;}
+
+        public Socket GetConnectionByID (int id) { return connections[id];}
 
         public void RemoveConnectionByID(int id)
         {
