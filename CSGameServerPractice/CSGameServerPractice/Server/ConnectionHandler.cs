@@ -22,6 +22,12 @@ namespace ConnetionHandle
 
         public Socket GetConnectionByID (int id) { return connections[id];}
 
+        public void DisConnectByID(int id)
+        {
+            connections[id].Shutdown(SocketShutdown.Both);
+            connections[id].Close();
+        }
+
         public void RemoveConnectionByID(int id)
         {
             if(connections.Count == 0)

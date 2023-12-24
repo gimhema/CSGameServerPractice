@@ -162,10 +162,12 @@ namespace CSGameServerPractice
 
         private void OnApplicationQuit()
         {
-            for (int i = 0; i < clientList.Count; i++)
+            int numConnection = clientHandler.GetConnectionCount();
+            for (int i = 0; i < numConnection; i++)
             {
-                clientList[i].Shutdown(SocketShutdown.Both);
-                clientList[i].Close();
+                clientHandler.DisConnectByID(i);
+                // clientList[i].Shutdown(SocketShutdown.Both);
+                // clientList[i].Close();
             }
             if (serverSocket != null)
             {
