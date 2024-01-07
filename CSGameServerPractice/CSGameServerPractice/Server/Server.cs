@@ -15,7 +15,6 @@ namespace CSGameServerPractice
     class Server
     {
         private static Socket serverSocket;
-        private static List<Socket> clientList = new List<Socket>();
         private static ConnectionHandler clientHandler = new ConnectionHandler();
 
         public static GameMessageHandler gameMessageHandler = new GameMessageHandler();
@@ -60,7 +59,7 @@ namespace CSGameServerPractice
         {
             if( args.SocketError == SocketError.Success )
             {
-                clientList.Add(args.AcceptSocket);
+                // clientList.Add(args.AcceptSocket);
                 clientHandler.AddNewConnetion(args.AcceptSocket);
                 
                 if (args.AcceptSocket != null )
@@ -139,8 +138,6 @@ namespace CSGameServerPractice
                 sendArgs.SetBuffer(buff, 0, buff.Length);
                 sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
 
-                // bool pending = clientList[i].SendAsync(sendArgs);
-                // bool pending = clientHandler.GetConnectionByID(i).SendAsync(sendArgs);
                 bool pending = SendAsyncToClient(i, sendArgs);
 
                 if (pending == false)
@@ -166,8 +163,7 @@ namespace CSGameServerPractice
             for (int i = 0; i < numConnection; i++)
             {
                 clientHandler.DisConnectByID(i);
-                // clientList[i].Shutdown(SocketShutdown.Both);
-                // clientList[i].Close();
+
             }
             if (serverSocket != null)
             {
